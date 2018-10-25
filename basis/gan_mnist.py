@@ -164,7 +164,7 @@ def main():
 
 
         # for train data at first time
-        # """
+        """
         # Pre-train discriminator
         for i in range(300):
             z_batch = np.random.normal(0, 1, size=[batch_size, z_dimensions])
@@ -207,17 +207,17 @@ def main():
                 estimate = sess.run(result, {x_placeholder: im})
                 print("Estimate:", estimate)
                 saver.save(sess, 'pretrained-model/pretrained_gan.ckpt')
-        # """
+        """
 
         # for using pretrained model.
-        # saver.restore(sess, './pretrained-model/pretrained_gan.ckpt')
-        # z_batch = np.random.normal(0, 1, size=[10, z_dimensions])
-        # z_placeholder = tf.placeholder(tf.float32, [None, z_dimensions], name='z_placeholder')
-        # generated_images = generator(z_placeholder, 10, z_dimensions)
-        # images = sess.run(generated_images, {z_placeholder: z_batch})
-        # for i in range(10):
-        #     plt.imshow(images[i].reshape([28, 28]), cmap='Greys')
-        #     plt.show()
+        saver.restore(sess, './pretrained-model/pretrained_gan.ckpt')
+        z_batch = np.random.normal(0, 1, size=[10, z_dimensions])
+        z_placeholder = tf.placeholder(tf.float32, [None, z_dimensions], name='z_placeholder')
+        generated_images = generator(z_placeholder, 10, z_dimensions)
+        images = sess.run(generated_images, {z_placeholder: z_batch})
+        for i in range(10):
+            plt.imshow(images[i].reshape([28, 28]), cmap='Greys')
+            plt.show()
 
 if __name__ == '__main__':
     main()
