@@ -106,13 +106,8 @@ def generator(z, batch_size, z_dim, reuse_variables=None):
 
 def main():
     z_dimensions = 100
-    z_placeholder = tf.placeholder(tf.float32, [None, z_dimensions])
-
-    generated_image_output = generator(z_placeholder, 1, z_dimensions)
-    z_batch = np.random.normal(0, 1, [1, z_dimensions])
-
-    tf.reset_default_graph()
     batch_size = 50
+    tf.reset_default_graph()
 
     z_placeholder = tf.placeholder(tf.float32, [None, z_dimensions], name='z_placeholder')
     # z_placeholder is for feeding input noise to the generator
@@ -149,9 +144,10 @@ def main():
         # Train the generator
         g_trainer = tf.train.AdamOptimizer(0.0001).minimize(g_loss, var_list=g_vars)
 
+    # From this point forward, reuse variables
     tf.get_variable_scope().reuse_variables()
     saver = tf.train.Saver()
-    # scope.reuse_variables()
+
 
     with tf.Session() as sess:
         tf.summary.scalar('Generator_loss', g_loss)
@@ -166,11 +162,16 @@ def main():
 
         sess.run(tf.global_variables_initializer())
 
+
+        # for train data at first time
+        # """
         # Pre-train discriminator
         for i in range(300):
+            z_batch = np.random.normal(0, 1, size=[batch_size, z_dimensions])
             real_image_batch = mnist.train.next_batch(batch_size)[0].reshape([batch_size, 28, 28, 1])
-            _, __ = sess.run([d_trainer_real, d_trainer_fake],
-                             {x_placeholder: real_image_batch})
+            _, __, dLossReal, dLossFake = sess.run([d_trainer_real, d_trainer_fake, d_loss_real, d_loss_fake],
+                                                   {x_placeholder: real_image_batch, z_placeholder: z_batch})
+            print(i)
 
         # Train generator and discriminator together
         for i in range(100000):
@@ -206,8 +207,10 @@ def main():
                 estimate = sess.run(result, {x_placeholder: im})
                 print("Estimate:", estimate)
                 saver.save(sess, 'pretrained-model/pretrained_gan.ckpt')
+        # """
 
-        # saver.restore(sess, 'pretrained-model/pretrained_gan.ckpt')
+        # for using pretrained model.
+        # saver.restore(sess, './pretrained-model/pretrained_gan.ckpt')
         # z_batch = np.random.normal(0, 1, size=[10, z_dimensions])
         # z_placeholder = tf.placeholder(tf.float32, [None, z_dimensions], name='z_placeholder')
         # generated_images = generator(z_placeholder, 10, z_dimensions)
