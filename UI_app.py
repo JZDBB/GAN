@@ -22,7 +22,7 @@ class ImageWindow(wx.Window):
 class AppFrame(wx.Frame):
 
     def __init__(self, parent, ID, title, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE):
-        wx.Frame.__init__(self, parent, ID, title, (0, 0), (800, 600), style)
+        wx.Frame.__init__(self, parent, ID, title, (0, 0), (800, 500), style)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         topBox = wx.BoxSizer(wx.HORIZONTAL)
@@ -41,8 +41,8 @@ class AppFrame(wx.Frame):
         botBox.Add(self.btnA)
         botBox.Add(self.btnB)
 
-        self.imw = ImageWindow(self, wx.ID_ANY)
-        topBox.Add(self.imw, 1, wx.EXPAND)
+        self.imw_eye = ImageWindow(self, wx.ID_ANY)
+        topBox.Add(self.imw_eye, 1, wx.EXPAND)
         self.imw_all = ImageWindow(self, wx.ID_ANY)
         topBox.Add(self.imw_all, 2, wx.EXPAND)
 
@@ -58,27 +58,27 @@ class AppFrame(wx.Frame):
 
         self.SetSizer(vbox)
 
-    def OnClickSellect(self,evt):
-        name = self.text.GetValue()
+    def OnClickSellect(self, evt):
+        filenames = self.text.GetValue()
         # self.filename = os.path.join('data', self.filenames[self.count])
-        image = wx.Image(name, wx.BITMAP_TYPE_ANY)
+        image = wx.Image(filenames, wx.BITMAP_TYPE_ANY)
         # Scale the oiginal to another wx.Image
         w = image.GetWidth()
         h = image.GetHeight()
-        img2 = image.Scale(w / 3, h / 3)  # 缩小图像
-        self.imw.SetImage(img2)
+        scale = w / 200
+        img2 = image.Scale(w / scale, h / scale)  # 缩小图像
+        self.imw_eye.SetImage(img2)
 
     def OnClickGEN(self, evt):
-        # self.count += 1
-        # if self.count >= len(self.filenames):
-        #     self.count -= 1
+        filenames = self.text.GetValue()
         # self.filename = os.path.join('data', self.filenames[self.count])
-        image = wx.Image(self.filename, wx.BITMAP_TYPE_ANY)
+        image = wx.Image(filenames, wx.BITMAP_TYPE_ANY)
         # Scale the oiginal to another wx.Image
         w = image.GetWidth()
         h = image.GetHeight()
-        img2 = image.Scale(w / 3, h / 3)  # 缩小图像
-        self.imw.SetImage(img2)
+        scale = w / 400
+        img2 = image.Scale(w / scale, h / scale)  # 缩小图像
+        self.imw_all.SetImage(img2)
 
 
 class MyApplication(wx.App):
