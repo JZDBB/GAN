@@ -2,6 +2,9 @@ import wx
 import os
 import shutil
 
+from eye2face_V00 import G
+import matplotlib.pyplot as plt
+
 class ImageWindow(wx.Window):
 
     def __init__(self, parent, id):
@@ -43,6 +46,8 @@ class AppFrame(wx.Frame):
 
         self.imw_eye = ImageWindow(self, wx.ID_ANY)
         topBox.Add(self.imw_eye, 1, wx.EXPAND)
+        self.imw_org = ImageWindow(self, wx.ID_ANY)
+        topBox.Add(self.imw_all, 2, wx.EXPAND)
         self.imw_all = ImageWindow(self, wx.ID_ANY)
         topBox.Add(self.imw_all, 2, wx.EXPAND)
 
@@ -56,27 +61,34 @@ class AppFrame(wx.Frame):
         #
         # self.imw.SetImage(img2)
 
+        filename = 'C:\\Users\\yn\\Desktop\\完整代码整理2018-12-17\\0.jpg'
+        self.text.SetValue(filename)
         self.SetSizer(vbox)
+        self.g = G()
 
     def OnClickSellect(self, evt):
         filenames = self.text.GetValue()
         # self.filename = os.path.join('data', self.filenames[self.count])
         image = wx.Image(filenames, wx.BITMAP_TYPE_ANY)
         # Scale the oiginal to another wx.Image
+        # image = image[:, :256, :]
         w = image.GetWidth()
         h = image.GetHeight()
-        scale = w / 200
+        scale = h / 256
         img2 = image.Scale(w / scale, h / scale)  # 缩小图像
         self.imw_eye.SetImage(img2)
 
     def OnClickGEN(self, evt):
         filenames = self.text.GetValue()
         # self.filename = os.path.join('data', self.filenames[self.count])
-        image = wx.Image(filenames, wx.BITMAP_TYPE_ANY)
+
         # Scale the oiginal to another wx.Image
+        results = self.g.run(plt.imread(filenames))
+        plt.imsave('result.jpg', results['outputs'])
+        image = wx.Image('result.jpg', wx.BITMAP_TYPE_ANY)
         w = image.GetWidth()
         h = image.GetHeight()
-        scale = w / 400
+        scale = h / 256
         img2 = image.Scale(w / scale, h / scale)  # 缩小图像
         self.imw_all.SetImage(img2)
 
