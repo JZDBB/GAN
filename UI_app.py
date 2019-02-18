@@ -22,19 +22,22 @@ class ImageWindow(wx.Window):
 class AppFrame(wx.Frame):
 
     def __init__(self, parent, ID, title, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE):
-        wx.Frame.__init__(self, parent, ID, title, pos, size, style)
+        wx.Frame.__init__(self, parent, ID, title, (0, 0), (800, 600), style)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         topBox = wx.BoxSizer(wx.HORIZONTAL)
         botBox = wx.BoxSizer(wx.HORIZONTAL)
         vbox.Add(topBox, 1, wx.EXPAND)
         vbox.Add(botBox)
-        self.filenames = os.listdir('data/')
+        # self.filenames = os.listdir('data/')
+        self.Static = wx.StaticText(self, label='path:', size=(40, 30))
+        self.text = wx.TextCtrl(self, wx.ID_ANY, size=(400, 30))
         self.btnA = wx.Button(self, wx.ID_ANY, 'sellect')
         self.Bind(wx.EVT_BUTTON, self.OnClickSellect, self.btnA)
         self.btnB = wx.Button(self, wx.ID_ANY, 'generate')
         self.Bind(wx.EVT_BUTTON, self.OnClickGEN, self.btnB)
-
+        botBox.Add(self.Static)
+        botBox.Add(self.text)
         botBox.Add(self.btnA)
         botBox.Add(self.btnB)
 
@@ -56,13 +59,9 @@ class AppFrame(wx.Frame):
         self.SetSizer(vbox)
 
     def OnClickSellect(self,evt):
-        full_path = self.filename.replace('data', 'new')
-        shutil.copy(self.filename, full_path)
-        self.count += 1
-        if self.count >= len(self.filenames):
-            self.count -= 1
-        self.filename = os.path.join('data', self.filenames[self.count])
-        image = wx.Image(self.filename, wx.BITMAP_TYPE_ANY)
+        name = self.text.GetValue()
+        # self.filename = os.path.join('data', self.filenames[self.count])
+        image = wx.Image(name, wx.BITMAP_TYPE_ANY)
         # Scale the oiginal to another wx.Image
         w = image.GetWidth()
         h = image.GetHeight()
@@ -70,10 +69,10 @@ class AppFrame(wx.Frame):
         self.imw.SetImage(img2)
 
     def OnClickGEN(self, evt):
-        self.count += 1
-        if self.count >= len(self.filenames):
-            self.count -= 1
-        self.filename = os.path.join('data', self.filenames[self.count])
+        # self.count += 1
+        # if self.count >= len(self.filenames):
+        #     self.count -= 1
+        # self.filename = os.path.join('data', self.filenames[self.count])
         image = wx.Image(self.filename, wx.BITMAP_TYPE_ANY)
         # Scale the oiginal to another wx.Image
         w = image.GetWidth()
@@ -83,7 +82,6 @@ class AppFrame(wx.Frame):
 
 
 class MyApplication(wx.App):
-
     def OnInit(self):
         wnd = AppFrame(None, wx.ID_ANY, "Main Window")
         wnd.Show(True)
